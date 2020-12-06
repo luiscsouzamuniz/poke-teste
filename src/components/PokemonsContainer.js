@@ -3,6 +3,7 @@ import { Component } from "react";
 import { Button, Container, Sprite } from 'nes-react'
 import { gql } from "@apollo/client"
 import styled from 'styled-components'
+import { Link } from "react-router-dom";
 
 const StyledDiv = styled.div`
   margin-top: 10px;
@@ -41,6 +42,12 @@ export class PokemonsContainer extends Component {
 
   componentDidMount = () => this.getAllPokemons()
 
+  componentDidUpdate = (prevProps, prevState) => {
+    const { first } = this.state
+
+    if (prevState.first !== first) this.getAllPokemons()
+  }
+
   getAllPokemons = async () => {
     const { first } = this.state
     const {
@@ -64,6 +71,9 @@ export class PokemonsContainer extends Component {
 
   getOnePokemon = async () => {
     const { name } = this.state
+
+    if (!name) return undefined
+
     const {
       data: {
         pokemon,
@@ -89,6 +99,12 @@ export class PokemonsContainer extends Component {
     return undefined
   }
 
+  loadMore = () => {
+    this.setState(prevState => ({
+      first: prevState.first + 12,
+    }))
+  }
+
   onChangeInput = ({ target: { value: name }}) => this.setState({ name }) 
 
   render() {
@@ -97,6 +113,7 @@ export class PokemonsContainer extends Component {
     if (loading) return (
       <div className="center-xs">
         <Sprite sprite="pokeball" />
+        <span className="row center-xs">Carregando...</span>
       </div>
     )
     
@@ -130,28 +147,27 @@ export class PokemonsContainer extends Component {
                   </div>
                 </Container>
               </div>
-            ) : pokemons.map(pokemon => {
-              const type = pokemon?.types?.map(type => type)
-              return (
-                <StyledDiv className="col-md-3 col-xs-6" key={pokemon.name}>
-                  <Container key={pokemon.id} title={pokemon.name} rounded>
-                    <div className="center-xs">
-                      <img
-                        className="nes-avatar is-rounded is-large"
-                        alt={pokemon.name}
-                        src={pokemon.image}
-                      />
-                    </div>
-                    <div className="center-xs">
-                      <span>Tipo: {type.join(', ')}</span>
-                    </div>
-                    <div className="center-xs">
+            ) : pokemons.map(pokemon => (
+              <StyledDiv className="col-md-3 col-xs-6" key={pokemon.name}>
+                <Container key={pokemon.id} title={pokemon.name}>
+                  <div className="center-xs">
+                    <img
+                      className="nes-avatar is-large"
+                      alt={pokemon.name}
+                      src={pokemon.image}
+                    />
+                  </div>
+                  <div className="center-xs">
+                    <span>Tipo: {pokemon.types.join(', ')}</span>
+                  </div>
+                  <div className="center-xs">
+                    <Link to={`/details/${pokemon.id}`}>
                       <Button type="button">Detalhes</Button>
-                    </div>
-                  </Container>
-                </StyledDiv>
-              )
-            })
+                    </Link>
+                  </div>
+                </Container>
+              </StyledDiv>
+            ))
           }
         </div>
         {
