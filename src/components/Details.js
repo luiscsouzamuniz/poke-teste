@@ -1,10 +1,10 @@
 import { ApolloConsumer } from "@apollo/client"
-import { PokemonsContainer } from "./PokemonsContainer"
-export const PokemonGrid = () => (
+import { PokemonDetails } from "./PokemonDetails"
+export const Details = ({ match: { params }}) => (
   <ApolloConsumer>
     {({ query }) => (
       <div className="col-xs-12">
-        <PokemonsContainer query={query} />
+        <PokemonDetails query={query} params={params} />
       </div>
     )}
   </ApolloConsumer>

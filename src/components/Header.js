@@ -1,15 +1,18 @@
+import { Link } from "react-router-dom"
+import styled from 'styled-components'
+
+const StyledNav = styled.nav`
+  padding: 10px;
+  border-bottom: 3px solid #000;
+  margin-bottom: 20px;
+`
+
 export const Header = () => (
-  <nav
-    style={{
-      padding: '10px',
-      borderBottom: '3px solid #000',
-      marginBottom: '20px',
-    }}
-  >
+  <StyledNav>
     <div className="container">
       <h2 style={{ marginBottom: 0 }}>
-        PokéTeste
+        <Link style={{ color: 'black' }} to="/">PokéTeste</Link>
       </h2>
     </div>
-  </nav>
+  </StyledNav>
 )
