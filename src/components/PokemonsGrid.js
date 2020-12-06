@@ -8,7 +8,7 @@ const StyledDiv = styled.div`
   font-size: 0.7rem;
 `
 
-const pokemonsQuery = gql`
+const allPokemonsQuery = gql`
   query Pokemons($first: Int!) {
     pokemons (first: $first) {
       id
@@ -19,17 +19,30 @@ const pokemonsQuery = gql`
   }
 `
 
-const PokemonsContainer = ({ query, variables }) => {
+const onePokemonQuery = gql`
+  query Pokemon($name: String) {
+    pokemon (name: $name) {
+      id
+      name
+      image
+      types
+    }
+  }
+`
+
+const PokemonsContainer = ({ query, variables, loadMore }) => {
   const [pokemons, setPokemons] = useState([])
   const [loading, setLoading] = useState(true)
+  const [name, setName] = useState('')
 
-  const getPokemons = async () => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const getAllPokemons = async () => {
     const {
       data: {
         pokemons,
       },
     } = await query({
-      query: pokemonsQuery,
+      query: allPokemonsQuery,
       variables,
     })
 
@@ -37,7 +50,25 @@ const PokemonsContainer = ({ query, variables }) => {
     setLoading(false)
   }
 
-  useEffect(() => getPokemons())
+  const getOnePokemon = async () => {
+    const {
+      data: {
+        pokemon,
+      },
+    } = await query({
+      query: onePokemonQuery,
+      variables: {
+        name,
+      },
+    })
+
+    if (pokemon) setPokemons([pokemon])
+  }
+
+  const onChangeInput = ({ target: { value }}) => setName(value) 
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => getAllPokemons(), [])
 
   if (loading) return (
     <div className="center-xs">
@@ -46,45 +77,73 @@ const PokemonsContainer = ({ query, variables }) => {
   )
 
   return (
-    <div className="row">
-      {pokemons.map(pokemon => {
-          const type = pokemon.types.map(type => type)
-          return (
-            <StyledDiv className="col-md-4 col-xs-6">
-              <Container key={pokemon.id} title={pokemon.name} rounded>
-                <div className="center-xs">
-                  <img
-                    className="nes-avatar is-rounded is-large"
-                    alt={pokemon.name}
-                    src={pokemon.image}
-                  />
-                </div>
-                <div className="center-xs">
-                  <span>Tipo: {type.join(', ')}</span>
-                </div>
-                <div className="center-xs">
-                  <Button type="button">Detalhes</Button>
-                </div>
-              </Container>
-            </StyledDiv>
-          )
-        })}
-    </div>
+    <>
+      <div className="nes-text row col-xs-12">
+        <div className="nes-field is-inline">
+          <input
+            type="text"
+            className="nes-input"
+            onChange={onChangeInput}
+          />
+          <Button onClick={getOnePokemon} primary>Buscar</Button>
+        </div>
+      </div>
+      <div className="row">
+        {
+          pokemons.map(pokemon => {
+            const type = pokemon?.types?.map(type => type)
+            return (
+              <StyledDiv className="col-md-3 col-xs-6" key={pokemon.name}>
+                <Container key={pokemon.id} title={pokemon.name} rounded>
+                  <div className="center-xs">
+                    <img
+                      className="nes-avatar is-rounded is-large"
+                      alt={pokemon.name}
+                      src={pokemon.image}
+                    />
+                  </div>
+                  <div className="center-xs">
+                    <span>Tipo: {type.join(', ')}</span>
+                  </div>
+                  <div className="center-xs">
+                    <Button type="button">Detalhes</Button>
+                  </div>
+                </Container>
+              </StyledDiv>
+            )
+          })
+        }
+      </div>
+      {
+        pokemons.length < 2 ? null : (
+          <StyledDiv className="center-xs">
+            <Button onClick={loadMore}>Carregar mais...</Button>
+          </StyledDiv>
+        )
+      }
+    </>
   )
 }
 
 export class PokemonGrid extends Component {
+  state = {
+    first: 12,
+  }
+
+  loadMore = () => {
+    this.setState(prevState => ({
+      first: prevState.first + 12,
+    }))
+  }
+
   render() {
+    const { first } = this.state
+
     return (
       <ApolloConsumer>
         {({ query }) => (
           <div className="col-xs-12">
-            <div className="nes-text row col-xs-12">
-              <span>Buscar: </span>
-            </div>
-            <div className="">
-              <PokemonsContainer query={query} variables={{ first: 15 }} />
-            </div>
+            <PokemonsContainer query={query} variables={{ first }} loadMore={this.loadMore} />
           </div>
         )}
       </ApolloConsumer>
