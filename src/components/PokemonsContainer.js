@@ -4,6 +4,8 @@ import { Button, Container, Sprite } from 'nes-react'
 import { gql } from "@apollo/client"
 import styled from 'styled-components'
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { incrementFirst } from "../store/actions/pokemons";
 
 const StyledDiv = styled.div`
   margin-top: 10px;
@@ -32,29 +34,28 @@ query Pokemon($name: String) {
 }
 `
 
-export class PokemonsContainer extends Component {
+class PokemonsContainerClass extends Component {
   state = {
     pokemons: [],
     loading: true,
     name: '',
-    first: 12,
   }
 
   componentDidMount = () => this.getAllPokemons()
 
-  componentDidUpdate = (prevProps, prevState) => {
-    const { first } = this.state
+  componentDidUpdate = (prevProps) => {
+    const { first } = this.props
 
-    if (prevState.first !== first) this.getAllPokemons()
+    if (prevProps.first !== first) this.getAllPokemons()
   }
 
   getAllPokemons = async () => {
-    const { first } = this.state
+    const { first } = this.props
     const {
       data: {
         pokemons,
       },
-    } = await this.props.query({
+    } = await this.props.apollo.query({
       query: allPokemonsQuery,
       variables: {
         first,
@@ -78,7 +79,7 @@ export class PokemonsContainer extends Component {
       data: {
         pokemon,
       },
-    } = await this.props.query({
+    } = await this.props.apollo.query({
       query: onePokemonQuery,
       variables: {
         name,
@@ -99,16 +100,12 @@ export class PokemonsContainer extends Component {
     return undefined
   }
 
-  loadMore = () => {
-    this.setState(prevState => ({
-      first: prevState.first + 12,
-    }))
-  }
-
   onChangeInput = ({ target: { value: name }}) => this.setState({ name }) 
 
   render() {
     const { loading, name, pokemons } = this.state
+
+    const { first } = this.props
 
     if (loading) return (
       <div className="center-xs">
@@ -173,7 +170,9 @@ export class PokemonsContainer extends Component {
         {
           pokemons.length < 2 ? null : (
             <StyledDiv className="center-xs">
-              <Button onClick={this.loadMore}>Carregar mais...</Button>
+              <Button
+                onClick={() => this.props.incrementFirst(first)}
+              >Carregar mais...</Button>
             </StyledDiv>
           )
         }
@@ -182,3 +181,15 @@ export class PokemonsContainer extends Component {
   }
 
 }
+
+const mapStateToProps = state => ({
+  pokemons: state.pokemons.data,
+  apollo: state.apollo,
+  first: state.pokemons.first,
+})
+
+const mapDispatchToProps = dispatch => ({
+  incrementFirst: (first) => dispatch(incrementFirst(first)),
+})
+
+export const PokemonsContainer = connect(mapStateToProps, mapDispatchToProps)(PokemonsContainerClass)

@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client"
-import { Button, Container, Sprite, Progress } from "nes-react"
+import { Button, Container, Sprite, Progress, List } from "nes-react"
 import { Component } from "react"
 import { Link } from "react-router-dom"
 
@@ -96,23 +96,24 @@ export class PokemonDetails extends Component {
             </div>
             <div className="col-md-8 col-xs-12">
               <Container rounded title="Detalhes">
-                <ul>
+                <List solid>
                   <li>Categoria: {pokemon.classification}</li>
                   <li>Tipo: {pokemon.types.join(', ')}</li>
                   <li>Altura: {pokemon.height.minimum} - {pokemon.height.maximum}</li>
                   <li>Peso: {pokemon.weight.minimum} - {pokemon.weight.maximum}</li>
                   <li>
-                    Ataques: <ul>
-                      <li>rápidos: {pokemon.attacks.fast.map(item => item.name).join(', ')}</li>
-                      <li>especiais: {pokemon.attacks.special.map(item => item.name).join(', ')}</li>
-                    </ul>
+                    Ataques: 
                   </li>
+                  <List>
+                    <li>rápidos: {pokemon.attacks.fast.map(item => item.name).join(', ')}</li>
+                    <li>especiais: {pokemon.attacks.special.map(item => item.name).join(', ')}</li>
+                  </List>
                   <li>Forte contra: {pokemon.resistant.join(', ')}</li>
                   <li>Fraco contra: {pokemon.weaknesses.join(', ')}</li>
                   <br />
-                  <span>HP <Progress max={3000} value={pokemon.maxHP} /></span>
-                  <span>CP <Progress max={3000} value={pokemon.maxCP} /></span>
-                </ul>
+                  <span>HP <Progress max={4500} value={pokemon.maxHP} /></span>
+                  <span>CP <Progress max={4500} value={pokemon.maxCP} /></span>
+                </List>
               </Container>
             </div>
           </div>
