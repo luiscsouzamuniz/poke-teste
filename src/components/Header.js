@@ -3,12 +3,11 @@ export const Header = () => (
     style={{
       padding: '10px',
       borderBottom: '3px solid #000',
-      marginBottom: '60px',
+      marginBottom: '20px',
     }}
   >
-    <div class="container">
+    <div className="container">
       <h2 style={{ marginBottom: 0 }}>
-        <i class="nes-pokeball" />
         PokéTeste
       </h2>
     </div>
