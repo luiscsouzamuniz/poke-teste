@@ -8,35 +8,35 @@ import { setPokemons } from "../store/actions/pokemons"
 import { TextFields } from "./TextFields"
 
 const Name = () => (
-  <TextFields name="name" label="Nome" />
+  <TextFields required name="name" label="Nome" />
 )
 
 const Classification = () => (
-  <TextFields name="classification" label="Categoria" />
+  <TextFields required name="classification" label="Categoria" />
 )
 
 const MaxHeight = () => (
-  <TextFields name="height.maximum" label="Max" />
+  <TextFields required name="height.maximum" label="Max" />
 )
 
 const MinHeight = () => (
-  <TextFields name="height.minimum" label="Min" />
+  <TextFields required name="height.minimum" label="Min" />
 )
 
 const MaxWeight = () => (
-  <TextFields name="weight.maximum" label="Max" />
+  <TextFields required name="weight.maximum" label="Max" />
 )
 
 const MinWeight = () => (
-  <TextFields name="weight.minimum" label="Min" />
+  <TextFields required name="weight.minimum" label="Min" />
 )
 
 const MaxHP = () => (
-  <TextFields name="maxHP" label="Max HP" />
+  <TextFields required name="maxHP" label="Max HP" />
 )
 
 const MaxCP = () => (
-  <TextFields name="maxCP" label="Max CP" />
+  <TextFields required name="maxCP" label="Max CP" />
 )
 
 const onePokemonQuery = gql`
