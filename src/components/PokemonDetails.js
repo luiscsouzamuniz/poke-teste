@@ -1,7 +1,9 @@
 import { gql } from "@apollo/client"
-import { Button, Container, Sprite, Progress } from "nes-react"
+import { Button, Container, Sprite, Progress, List } from "nes-react"
 import { Component } from "react"
+import { connect } from "react-redux"
 import { Link } from "react-router-dom"
+import { setPokemons } from "../store/actions/pokemons"
 
 const onePokemonQuery = gql`
 query Pokemon($id: String) {
@@ -36,7 +38,7 @@ query Pokemon($id: String) {
 }
 `
 
-export class PokemonDetails extends Component {
+export class PokemonDetailsClass extends Component {
   state={
     loading: true,
     pokemon: null,
@@ -45,21 +47,22 @@ export class PokemonDetails extends Component {
   componentDidMount = () => this.getOnePokemon()
 
   getOnePokemon = async () => {
-    const { params } = this.props
+    const { params, apollo } = this.props
 
     const {
       data: {
         pokemon,
       },
-    } = await this.props.query({
+    } = await apollo.query({
       query: onePokemonQuery,
       variables: {
         id: params.id,
       },
     })
 
+    this.props.setPokemons(pokemon)
+
     this.setState({
-      pokemon,
       loading: false,
     })
 
@@ -67,7 +70,8 @@ export class PokemonDetails extends Component {
   }
 
   render() {
-    const { loading, pokemon } = this.state
+    const { loading } = this.state
+    const { pokemons } = this.props
 
     if (loading) return (
       <div className="center-xs">
@@ -76,7 +80,7 @@ export class PokemonDetails extends Component {
       </div>
     )
 
-    if (!pokemon) return (
+    if (!pokemons) return (
       <div className="col-md-12">
         <Container dark rounded>
           <div className="nes-field is-inline">
@@ -89,30 +93,31 @@ export class PokemonDetails extends Component {
 
     return (
       <div className="col-xs-12">
-        <Container title={`${pokemon.name} - Nº ${pokemon.number}`}>
+        <Container title={`${pokemons.name} - Nº ${pokemons.number}`}>
           <div className="row">
             <div className="col-md-4 col-xs-12">
-              <img src={pokemon.image} alt={pokemon.name} />
+              <img src={pokemons.image} alt={pokemons.name} />
             </div>
             <div className="col-md-8 col-xs-12">
               <Container rounded title="Detalhes">
-                <ul>
-                  <li>Categoria: {pokemon.classification}</li>
-                  <li>Tipo: {pokemon.types.join(', ')}</li>
-                  <li>Altura: {pokemon.height.minimum} - {pokemon.height.maximum}</li>
-                  <li>Peso: {pokemon.weight.minimum} - {pokemon.weight.maximum}</li>
+                <List solid>
+                  <li>Categoria: {pokemons.classification}</li>
+                  <li>Tipo: {pokemons.types.join(', ')}</li>
+                  <li>Altura: {pokemons.height.minimum} - {pokemons.height.maximum}</li>
+                  <li>Peso: {pokemons.weight.minimum} - {pokemons.weight.maximum}</li>
                   <li>
-                    Ataques: <ul>
-                      <li>rápidos: {pokemon.attacks.fast.map(item => item.name).join(', ')}</li>
-                      <li>especiais: {pokemon.attacks.special.map(item => item.name).join(', ')}</li>
-                    </ul>
+                    Ataques: 
                   </li>
-                  <li>Forte contra: {pokemon.resistant.join(', ')}</li>
-                  <li>Fraco contra: {pokemon.weaknesses.join(', ')}</li>
+                  <List>
+                    <li>rápidos: {pokemons.attacks.fast.map(item => item.name).join(', ')}</li>
+                    <li>especiais: {pokemons.attacks.special.map(item => item.name).join(', ')}</li>
+                  </List>
+                  <li>Forte contra: {pokemons.resistant.join(', ')}</li>
+                  <li>Fraco contra: {pokemons.weaknesses.join(', ')}</li>
                   <br />
-                  <span>HP <Progress max={3000} value={pokemon.maxHP} /></span>
-                  <span>CP <Progress max={3000} value={pokemon.maxCP} /></span>
-                </ul>
+                  <span>HP <Progress max={4500} value={pokemons.maxHP} /></span>
+                  <span>CP <Progress max={4500} value={pokemons.maxCP} /></span>
+                </List>
               </Container>
             </div>
           </div>
@@ -120,7 +125,7 @@ export class PokemonDetails extends Component {
             <Link to="/">
               <Button>Voltar</Button>
             </Link>
-            <Link to={`/edit/${pokemon.id}`}>
+            <Link to={`/edit/${pokemons.id}`}>
               <Button primary style={{ marginLeft: '10px' }}>Editar</Button>
             </Link>
           </div>
@@ -129,3 +134,17 @@ export class PokemonDetails extends Component {
     )
   }
 }
+
+const mapStateToProps = state => ({
+  pokemons: state.pokemons.data,
+  apollo: state.apollo,
+})
+
+const mapDispatchToProps = dispatch => ({
+  setPokemons: (pokemons) => dispatch(setPokemons(pokemons)),
+})
+
+export const PokemonDetails = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(PokemonDetailsClass)
