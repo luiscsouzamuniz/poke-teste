@@ -163,11 +163,17 @@ class PokemonsContainerClass extends Component {
           }
         </div>
         {
-          pokemons.length < 2 ? null : (
+          pokemons.length >= 2 ? (
             <StyledDiv className="center-xs">
               <Button
                 onClick={() => this.props.incrementFirst(first)}
               >Carregar mais...</Button>
+            </StyledDiv>
+          ) : (
+            <StyledDiv className="start-xs">
+              <Button
+                onClick={this.getAllPokemons}
+              >Voltar</Button>
             </StyledDiv>
           )
         }
