@@ -62,7 +62,6 @@ query Pokemon($id: String) {
 export class PokemonEditClass extends Component {
   state={
     loading: true,
-    pokemon: null,
   }
 
   componentDidMount = () => this.getOnePokemon()
@@ -90,6 +89,10 @@ export class PokemonEditClass extends Component {
     return undefined
   }
 
+  onSubmit = (attributes) => {
+    localStorage.setItem('pokemonSaved', JSON.stringify(attributes));
+  }
+
   render() {
     const { loading } = this.state
     const { pokemons } = this.props
@@ -115,9 +118,9 @@ export class PokemonEditClass extends Component {
     return (
       <div className="col-xs-12">
         <Form
-          onSubmit={(attributes) => { console.log(attributes)}}
+          onSubmit={this.onSubmit}
           initialValues={pokemons} 
-          render={({ handleSubmit }) => (
+          render={({ handleSubmit, pristine }) => (
             <form onSubmit={handleSubmit}>
               <Container>
                 <div className="row">
@@ -142,7 +145,7 @@ export class PokemonEditClass extends Component {
                   <Link to={`/details/${pokemons.id}`}>
                     <Button>Voltar</Button>
                   </Link>
-                  <Button success style={{ marginLeft: '10px' }}>Salvar</Button>
+                  <Button disabled={pristine} success style={{ marginLeft: '10px' }}>Salvar</Button>
                 </div>
               </Container>
             </form>
