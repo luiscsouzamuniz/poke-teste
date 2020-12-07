@@ -4,8 +4,8 @@ import { Button, Container, Sprite } from 'nes-react'
 import { gql } from "@apollo/client"
 import styled from 'styled-components'
 import { Link } from "react-router-dom";
-import { connect } from "react-redux";
-import { incrementFirst } from "../store/actions/pokemons";
+import { connect } from "react-redux"
+import { incrementFirst, setPokemons } from "../store/actions/pokemons";
 
 const StyledDiv = styled.div`
   margin-top: 10px;
@@ -36,7 +36,6 @@ query Pokemon($name: String) {
 
 class PokemonsContainerClass extends Component {
   state = {
-    pokemons: [],
     loading: true,
     name: '',
   }
@@ -63,8 +62,8 @@ class PokemonsContainerClass extends Component {
     })
 
     if (pokemons) {
+      this.props.setPokemons(pokemons)
       this.setState({
-        pokemons,
         loading: false,
       })
     }
@@ -87,25 +86,21 @@ class PokemonsContainerClass extends Component {
     })
 
     if (pokemon) {
-      this.setState({
-        pokemons: [pokemon],
-      })
+      this.props.setPokemons([pokemon])
 
       return undefined
     }
 
-    this.setState({
-      pokemons: [],
-    })
+    this.props.setPokemons([])
     return undefined
   }
 
   onChangeInput = ({ target: { value: name }}) => this.setState({ name }) 
 
   render() {
-    const { loading, name, pokemons } = this.state
+    const { loading, name } = this.state
 
-    const { first } = this.props
+    const { first, pokemons } = this.props
 
     if (loading) return (
       <div className="center-xs">
@@ -190,6 +185,10 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   incrementFirst: (first) => dispatch(incrementFirst(first)),
+  setPokemons: (pokemons) => dispatch(setPokemons(pokemons)),
 })
 
-export const PokemonsContainer = connect(mapStateToProps, mapDispatchToProps)(PokemonsContainerClass)
+export const PokemonsContainer = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(PokemonsContainerClass)

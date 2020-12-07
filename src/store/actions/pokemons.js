@@ -4,3 +4,10 @@ export const incrementFirst = (first) => {
     first: first + 12,
   }
 }
+
+export const setPokemons = (pokemons) => {
+  return {
+    type: 'SET_POKEMONS',
+    pokemons,
+  }
+}

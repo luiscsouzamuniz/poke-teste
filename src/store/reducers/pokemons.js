@@ -10,5 +10,12 @@ export const pokemons = (state = INITIAL_STATE, action) => {
       first: action.first,
     }
   }
+
+  if (action.type === 'SET_POKEMONS') {
+    return {
+      ...state,
+      data: action.pokemons,
+    }
+  }
   return state
 }
