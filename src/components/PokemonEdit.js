@@ -124,8 +124,6 @@ export class PokemonEditClass extends Component {
                   <div className="col-xs-12">
                     <Name />
                     <Classification />
-                    <label>Categoria:</label>
-                    <input className="nes-input" value={pokemons.classification} />
                     <label>Altura: </label>
                     <div className="nes-field is-inline">
                       <MinHeight />
