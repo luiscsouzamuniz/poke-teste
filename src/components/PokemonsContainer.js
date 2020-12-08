@@ -140,7 +140,7 @@ class PokemonsContainerClass extends Component {
                 </Container>
               </div>
             ) : pokemons.map(pokemon => (
-              <StyledDiv className="col-md-3 col-xs-6" key={pokemon.name}>
+              <StyledDiv className="col-md-4 col-xs-12" key={pokemon.name}>
                 <Container key={pokemon.id} title={pokemon.name}>
                   <div className="center-xs">
                     <img
