@@ -90,7 +90,10 @@ export class PokemonEditClass extends Component {
   }
 
   onSubmit = (attributes) => {
+    const { history } = this.props
     localStorage.setItem('pokemonSaved', JSON.stringify(attributes));
+
+    history.push(`/details/${attributes.id}`)    
   }
 
   render() {
