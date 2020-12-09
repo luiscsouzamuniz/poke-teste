@@ -41,7 +41,6 @@ query Pokemon($id: String) {
 export class PokemonDetailsClass extends Component {
   state={
     loading: true,
-    pokemon: null,
   }
 
   componentDidMount = () => this.getOnePokemon()
